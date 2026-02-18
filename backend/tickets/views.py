@@ -1,10 +1,11 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count, Q, Min
 from django.utils import timezone
 from .models import Ticket
 from .serializers import TicketSerializer
+from .llm_graph import run_ticket_classification
 
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
@@ -63,3 +64,18 @@ class TicketViewSet(viewsets.ModelViewSet):
             "priority_breakdown": priority_breakdown,
             "category_breakdown": category_breakdown
         })
+        
+    @action(detail=False, methods=['post'])
+    def classify(self, request):
+        description = request.data.get('description')
+        
+        if not description:
+            return Response(
+                {"error": "Please provide a ticket description."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        # Run our compiled LangGraph workflow
+        result = run_ticket_classification(description)
+        
+        return Response(result, status=status.HTTP_200_OK)
