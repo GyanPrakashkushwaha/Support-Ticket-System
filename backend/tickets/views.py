@@ -14,7 +14,6 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Ticket.objects.all().order_by('-created_at')
-        
         category = self.request.query_params.get('category')
         priority = self.request.query_params.get('priority')
         status = self.request.query_params.get('status')
