@@ -27,6 +27,8 @@ export default function TicketForm({ onTicketCreated }) {
             // The LLM returns suggested_category and suggested_priority
             setCategory(response.data.suggested_category);
             setPriority(response.data.suggested_priority);
+            console(response.data.suggested_category)
+            console(response.data.suggested_priority)
         } catch (err) {
             console.error("LLM Classification failed:", err);
             // We fail gracefully. The user can still manually select options.
